@@ -1,15 +1,5 @@
 project(libcmaes)
-cmake_minimum_required(VERSION 2.8)
-
-find_package(catkin REQUIRED COMPONENTS
-  eigen
-  )
-
-catkin_package(
-  INCLUDE_DIRS .
-  LIBRARIES cmaes
-  CATKIN_DEPENDS eigen
-)
+cmake_minimum_required(VERSION 3.16.3)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -20,12 +10,8 @@ option (BUILD_EXAMPLES
     "Build examples" OFF)
 
 #Include sources directory
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories(${catkin_INCLUDE_DIRS})
-
-#Enable C++17
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+#Enable C++11
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 #Sources files
 set(SOURCES_FILES
@@ -55,7 +41,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 
 #Build Code as static library
 add_library(cmaes SHARED ${SOURCES_FILES})
-target_link_libraries(cmaes)
+target_link_libraries(cmaes PRIVATE Eigen3::Eigen)
+target_include_directories(cmaes PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+)
 
 if (BUILD_EXAMPLES)
     add_executable(sample-code examples/sample-code.cc)
